@@ -1,0 +1,28 @@
+float circle(vec2 _st, float _radius, float aspect){
+    vec2 dist = _st - 0.5; // Center the circle in uv
+    dist.x *= aspect;      // Correct for aspect ratio
+    return smoothstep(_radius + 0.01, _radius - 0.01, length(dist));
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    // Normalized pixel coordinates (from 0 to 1)
+    vec2 uv = fragCoord/iResolution.xy;
+    float aspect = iResolution.x / iResolution.y;
+    vec3 color = vec3(0.0);
+
+    vec2 translate = vec2(cos(iTime), sin(iTime));
+    uv += translate * 0.25;
+
+    // Animated background
+    vec3 col = 0.5 + 0.5 * cos(iTime + uv.xyx + vec3(0, 2, 4));
+
+    // Correct circle function call
+    float c = circle(uv, 0.18, aspect);
+
+    // Mix circle over animated background
+    col = mix(col, vec3(1.0), c);
+
+    // Output to screen
+    fragColor = vec4(col, 1.0);
+}
